@@ -98,7 +98,7 @@
             @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center">
+                <a href="{{ route('patients.index') }}" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center hover:shadow-md transition-shadow cursor-pointer">
                     <div
                         class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold mr-4">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,10 +111,10 @@
                         <p class="text-sm font-medium text-slate-500">Total Registered Patients</p>
                         <p class="text-2xl font-bold text-slate-800">{{ $totalPatients ?? 0 }}</p>
                     </div>
-                </div>
+                </a>
 
-                <div
-                    class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center border-l-4 border-l-emerald-500">
+                <a href="{{ route('patients.index', ['status' => 'Active']) }}"
+                    class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center border-l-4 border-l-emerald-500 hover:shadow-md transition-shadow cursor-pointer">
                     <div
                         class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl font-bold mr-4">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,118 +126,161 @@
                         <p class="text-sm font-medium text-slate-500">Currently Active</p>
                         <p class="text-2xl font-bold text-slate-800">{{ $activePatients ?? 0 }}</p>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <form action="{{ route('patients.index') }}" method="GET"
-                    class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
                     <h2 class="font-semibold text-slate-800">Patient Directory</h2>
-                    <div class="relative">
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Search by name or email..."
-                            class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64">
+                </div>
 
-                        @if(request('search'))
-                        <a href="{{ route('patients.index') }}"
-                            class="absolute right-2 top-1.5 text-slate-400 hover:text-slate-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <form action="{{ route('patients.index') }}" method="GET"
+                    class="bg-white p-4 border-b border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+
+                    <div class="relative w-full md:w-1/3">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"></path>
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Search name, ID, or email..."
+                            class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-slate-400">
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto items-center">
+
+                        <select name="status" onchange="this.form.submit()"
+                            class="w-full md:w-auto px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-slate-50 text-slate-700 cursor-pointer">
+                            <option value="">All Statuses</option>
+                            <option value="Active" {{ request('status')=='Active' ? 'selected' : '' }}>Active Only
+                            </option>
+                            <option value="Inactive" {{ request('status')=='Inactive' ? 'selected' : '' }}>Inactive Only
+                            </option>
+                        </select>
+
+                        <select name="sort" onchange="this.form.submit()"
+                            class="w-full md:w-auto px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-slate-50 text-slate-700 cursor-pointer">
+                            <option value="newest" {{ request('sort')=='newest' ? 'selected' : '' }}>Newest Added
+                            </option>
+                            <option value="oldest" {{ request('sort')=='oldest' ? 'selected' : '' }}>Oldest Added
+                            </option>
+                            <option value="name_asc" {{ request('sort')=='name_asc' ? 'selected' : '' }}>Name (A-Z)
+                            </option>
+                            <option value="name_desc" {{ request('sort')=='name_desc' ? 'selected' : '' }}>Name (Z-A)
+                            </option>
+                        </select>
+
+                        @if(request()->anyFilled(['search', 'status', 'sort']))
+                        <a href="{{ route('patients.index') }}"
+                            class="text-sm font-semibold text-red-500 hover:text-red-700 transition-colors px-2">
+                            Clear
                         </a>
                         @endif
+
+                        <button type="submit"
+                            class="hidden md:block px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition-colors">
+                            Search
+                        </button>
                     </div>
                 </form>
 
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-white border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
-                            <th class="p-4 font-medium">Patient ID</th>
-                            <th class="p-4 font-medium">Full Name</th>
-                            <th class="p-4 font-medium">Email</th>
-                            <th class="p-4 font-medium">Status</th>
-                            <th class="p-4 font-medium text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 text-slate-700">
-                        @forelse($patients as $patient)
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4 text-sm text-slate-500 font-mono">{{ $patient->patient_number }}</td>
-                            <td class="p-4">
-                                <button @click='selectedPatient = {
-    "name": "{{ $patient->first_name }} {{ $patient->last_name }}",
-    "number": "{{ $patient->patient_number }}",
-    "email": "{{ $patient->email }}",
-    "dob": "{{ \Carbon\Carbon::parse($patient->dob)->format("F d, Y") }}",
-    "gender": "{{ $patient->gender }}",
-    "status": "{{ $patient->status }}"
-}' class="font-medium text-blue-600 hover:text-blue-800 text-left underline decoration-blue-100 underline-offset-4 decoration-2">
-                                    {{ $patient->first_name }} {{ $patient->last_name }}
-                                </button>
-                            </td>
-                            <td class="p-4 text-sm">{{ $patient->email }}</td>
-                            <td class="p-4">
-                                <span
-                                    class="px-3 py-1 {{ $patient->status == 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600' }} rounded-full text-xs font-semibold">
-                                    {{ $patient->status }}
-                                </span>
-                            </td>
-                            <td class="p-4 text-right flex justify-end items-center space-x-4">
-                                <a href="{{ route('patients.edit', $patient->id) }}"
-                                    class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Update</a>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                                <th class="p-4 font-medium w-1/6">Patient ID</th>
+                                <th class="p-4 font-medium w-1/4">Full Name</th>
+                                <th class="p-4 font-medium w-1/4">Email</th>
+                                <th class="p-4 font-medium w-1/6">Status</th>
+                                <th class="p-4 font-medium w-1/6 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            @forelse($patients as $patient)
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-4 text-sm text-slate-500 font-mono">{{ $patient->patient_number }}</td>
 
-                                <form action="{{ route('patients.destroy', $patient->id) }}" method="POST"
-                                    onsubmit="return confirm('Remove this patient from the database?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="text-red-500 hover:text-red-700 text-sm font-semibold">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="p-12 text-center text-slate-400">No patient records found.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                <td class="p-4">
+                                    @php
+                                    $patientData = [
+                                    'id' => $patient->id,
+                                    'name' => $patient->first_name . ' ' . $patient->last_name,
+                                    'number' => $patient->patient_number,
+                                    'email' => $patient->email,
+                                    'dob' => \Carbon\Carbon::parse($patient->dob)->format('F d, Y'),
+                                    'gender' => $patient->gender,
+                                    'status' => $patient->status,
+                                    'edit_url' => route('patients.edit', $patient->id)
+                                    ];
+                                    @endphp
+
+                                    <button @click='selectedPatient = @json($patientData)'
+                                        class="font-medium text-blue-600 hover:text-blue-800 text-left underline decoration-blue-100 underline-offset-4 decoration-2">
+                                        {{ $patient->first_name }} {{ $patient->last_name }}
+                                    </button>
+                                </td>
+
+                                <td class="p-4 text-sm">{{ $patient->email }}</td>
+                                <td class="p-4">
+                                    <span
+                                        class="px-3 py-1 {{ $patient->status == 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600' }} rounded-full text-xs font-semibold">
+                                        {{ $patient->status }}
+                                    </span>
+                                </td>
+                                <td class="p-4 text-right flex justify-end items-center space-x-4">
+                                    <a href="{{ route('patients.edit', $patient->id) }}"
+                                        class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Update</a>
+
+                                    <form action="{{ route('patients.destroy', $patient->id) }}" method="POST"
+                                        onsubmit="return confirm('Remove this patient from the database?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="text-red-500 hover:text-red-700 text-sm font-semibold">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="p-12 text-center text-slate-400">No patient records found.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div x-show="selectedPatient"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak
-            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100">
+        <div x-show="selectedPatient" style="display: none;"
+            class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
 
-            <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden"
-                @click.away="selectedPatient = null">
+            <div @click.outside="selectedPatient = null" x-data="{ activeTab: 'profile' }"
+                class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
 
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                    <h3 class="text-lg font-bold text-slate-800">Patient Profile</h3>
-                    <button @click="selectedPatient = null"
-                        class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+                    <h3 class="font-bold text-lg text-slate-800" x-text="selectedPatient?.name"></h3>
+                    <span class="text-xs font-mono bg-blue-100 text-blue-700 px-2 py-1 rounded-md"
+                        x-text="selectedPatient?.number"></span>
                 </div>
 
-                <div class="p-6 space-y-6">
-                    <div class="flex items-center space-x-4">
-                        <div
-                            class="h-14 w-14 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                            <span x-text="selectedPatient?.name.charAt(0)"></span>
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-900 text-xl" x-text="selectedPatient?.name"></p>
-                            <p class="text-sm text-slate-500 font-mono" x-text="selectedPatient?.number"></p>
-                        </div>
-                    </div>
+                <div class="flex border-b border-slate-200 px-6 pt-2 bg-slate-50/30">
+                    <button @click="activeTab = 'profile'"
+                        :class="activeTab === 'profile' ? 'border-blue-600 text-blue-700 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                        class="px-4 py-2 border-b-2 text-sm transition-colors">
+                        Medical Profile
+                    </button>
+                    <button @click="activeTab = 'account'"
+                        :class="activeTab === 'account' ? 'border-blue-600 text-blue-700 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                        class="px-4 py-2 border-b-2 text-sm transition-colors">
+                        Portal Account Info
+                    </button>
+                </div>
 
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                            <p class="text-xs font-bold uppercase text-slate-400 mb-1">Email Address</p>
-                            <p class="text-sm text-slate-800 font-medium" x-text="selectedPatient?.email"></p>
-                        </div>
-
+                <div class="p-6">
+                    <div x-show="activeTab === 'profile'" class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p class="text-xs font-bold uppercase text-slate-400 mb-1">Date of Birth</p>
@@ -248,16 +291,33 @@
                                 <p class="text-sm text-slate-800 font-medium" x-text="selectedPatient?.gender"></p>
                             </div>
                         </div>
+                        <div
+                            class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                            <p class="text-xs font-bold uppercase text-emerald-600">Patient Status</p>
+                            <span class="text-sm font-bold text-emerald-700" x-text="selectedPatient?.status"></span>
+                        </div>
                     </div>
 
-                    <div
-                        class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <p class="text-xs font-bold uppercase text-emerald-600">Account Status</p>
-                        <span class="text-sm font-bold text-emerald-700" x-text="selectedPatient?.status"></span>
+                    <div x-show="activeTab === 'account'" style="display: none;" class="space-y-4">
+                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <p class="text-xs font-bold uppercase text-blue-600 mb-1">Portal Login Email</p>
+                            <p class="text-sm text-slate-800 font-medium" x-text="selectedPatient?.email"></p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <p class="text-xs font-bold uppercase text-slate-500 mb-1">Portal Password</p>
+                            <p class="text-sm text-slate-700 font-mono tracking-widest">••••••••</p>
+                            <p class="text-xs text-slate-400 mt-2">Passwords are encrypted. To reset this patient's
+                                password, click Edit below.</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                    <a :href="selectedPatient?.edit_url"
+                        class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                        Edit Patient
+                    </a>
+
                     <button @click="selectedPatient = null"
                         class="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors">
                         Close

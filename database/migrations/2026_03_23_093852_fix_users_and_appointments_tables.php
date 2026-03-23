@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
-        // Fix for "Unknown column 'role'" (image_3d2cfa.png)
-        Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'role')) {
+        // 1. Fix the missing role column
+        if (!Schema::hasColumn('users', 'role')) {
+            Schema::table('users', function (Blueprint $table) {
                 $table->string('role')->default('patient')->after('password');
-            }
-        });
+            });
+        }
 
-        // Fix for "Data truncated for column 'status'" (image_3cbbc6.png)
+        // 2. Fix the "Data Truncated" error for status
         Schema::table('appointments', function (Blueprint $table) {
-            $table->string('status', 50)->change();
+            $table->string('status')->change(); // This makes it a standard string
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');

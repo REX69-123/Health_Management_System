@@ -42,6 +42,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        // ADD THIS GUARD
+        'patient' => [
+            'driver' => 'session',
+            'provider' => 'patients',
+        ],
     ],
 
     /*
@@ -64,13 +69,13 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', User::class),
+            'model' => App\Models\User::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        // ADD THIS PROVIDER
+        'patients' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class, // Using the same User model with roles
+        ],
     ],
 
     /*

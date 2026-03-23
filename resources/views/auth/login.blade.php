@@ -27,12 +27,20 @@
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200 sm:rounded-2xl sm:px-10 border border-slate-100">
+
             @if(session('success'))
-            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm">
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
                 {{ session('success') }}
             </div>
             @endif
-            <form class="space-y-6" action="{{ route('login') }}" method="POST">
+
+            @if(session('error'))
+            <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                {{ session('error') }}
+            </div>
+            @endif
+
+            <form class="space-y-6" action="{{ route('login.auth') }}" method="POST">
                 @csrf
 
                 <div>
@@ -79,13 +87,26 @@
                         Sign in securely
                     </button>
                 </div>
+                @php
+                $anyUserExists = \App\Models\User::exists();
+                @endphp
+
+                @if (!$anyUserExists)
                 <p class="text-center text-sm text-slate-600 mt-6">
-                    Don't have an account yet?
-                    <a href="{{ route('register') }}"
-                        class="text-blue-600 hover:text-blue-700 font-medium hover:underline">Sign up</a>
+                    System not initialized.
+                    <a href="{{ url('/register') }}"
+                        class="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                        Create First Admin Account
+                    </a>
                 </p>
-            </form>
+                @else
+                <p class="text-center text-xs text-slate-400 mt-6 italic">
+                    Contact your Administrator if you need an account.
+                </p>
+                @endif
         </div>
+        </form>
+    </div>
     </div>
 </body>
 

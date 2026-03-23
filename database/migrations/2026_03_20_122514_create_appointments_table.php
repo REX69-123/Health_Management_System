@@ -18,7 +18,7 @@ return new class extends Migration
             $table->time('appointment_time');
             $table->string('purpose');
             $table->text('notes')->nullable();
-            $table->string('status')->default('Pending'); // Pending, Rescheduled, Cancelled, Completed
+            $table->enum('status', ['Pending', 'Confirmed', 'Rescheduled', 'Cancelled', 'Completed'])->default('Pending');
             $table->timestamps();
         });
     }

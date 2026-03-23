@@ -22,7 +22,20 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // Make sure this is here!
     ];
+
+    // app/Models/User.php
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'patient_id');
+    }
+
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class, 'patient_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

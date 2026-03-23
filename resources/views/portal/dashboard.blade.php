@@ -1,109 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Portal | PulsePortal</title>
+    <title>Patient Portal | ClinicAdmin</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
-        .sos-btn { transition: all 0.3s ease; border: 2px solid #fee2e2; }
-        .sos-btn:hover { background-color: #dc2626; color: white; transform: translateY(-2px); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
-<body class="min-h-screen">
 
-    <nav class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-50">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+<body class="bg-[#f8fafc]">
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center text-teal-600">
+                        <i class="fa-solid fa-house-chimney-medical text-2xl mr-2"></i>
+                        <span class="font-bold text-xl tracking-tight text-slate-800">Health<span
+                                class="text-teal-600">Connect</span></span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:block text-right mr-4">
+                        <p class="text-sm font-semibold text-slate-700">{{ $patient->name }}</p>
+                        <p class="text-xs text-slate-500">Patient ID: #{{ str_pad($patient->id, 5, '0', STR_PAD_LEFT) }}
+                        </p>
+                    </div>
+                    <form action="{{ route('portal.logout') }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                            class="flex items-center gap-2 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </div>
             </div>
-            <span class="text-xl font-bold text-slate-900">Pulse<span class="text-indigo-600">Portal</span></span>
-        </div>
-
-        <div class="flex items-center gap-6">
-            <form action="{{ route('portal.emergency') }}" method="POST">
-                @csrf
-                <button type="submit" class="sos-btn bg-red-50 text-red-600 px-6 py-2 rounded-full text-xs font-bold tracking-wider">
-                    EMERGENCY SOS
-                </button>
-            </form>
-            <form action="{{ route('portal.logout') }}" method="POST">
-                @csrf
-                <button class="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest">Logout</button>
-            </form>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto p-8">
-        <header class="mb-10">
-            <h1 class="text-3xl font-bold text-slate-900">Welcome, {{ Auth::user()->name }}</h1>
-            <p class="text-slate-500 text-sm">Patient ID: {{ $clinicalProfile->patient_number ?? 'Pending' }}</p>
-        </header>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800 uppercase text-xs tracking-widest">Appointment Schedule</h3>
-                        <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-bold">{{ $appointments->count() }} Total</span>
-                    </div>
-                    <div class="p-0">
-                        @forelse($appointments as $app)
-                        <div class="p-6 flex items-center gap-6 border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                            <div class="text-center min-w-[60px]">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">{{ \Carbon\Carbon::parse($app->appointment_date)->format('M') }}</p>
-                                <p class="text-2xl font-black text-slate-800">{{ \Carbon\Carbon::parse($app->appointment_date)->format('d') }}</p>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-slate-900">{{ $app->reason ?? 'General Consultation' }}</h4>
-                                <p class="text-xs text-slate-500">Scheduled for {{ $app->appointment_time ?? '09:00 AM' }}</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-full uppercase tracking-tighter">Confirmed</span>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="p-20 text-center">
-                            <p class="text-slate-400 text-sm italic">No appointments found in your clinical record.</p>
-                        </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-1">
-                <div class="bg-slate-900 rounded-[2rem] p-8 text-white min-h-[400px]">
-                    <h3 class="font-bold uppercase text-[10px] tracking-[0.2em] text-slate-400 mb-8">Clinical Records</h3>
-
-                    <div class="space-y-6">
-                        @forelse($records as $record)
-                        <div class="group cursor-pointer">
-                            <div class="flex items-start justify-between mb-1">
-                                <h4 class="font-bold text-sm group-hover:text-indigo-400 transition-colors">{{ $record->title ?? 'Lab Result' }}</h4>
-                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            </div>
-                            <p class="text-[10px] text-slate-500 uppercase font-bold">{{ $record->created_at->format('M d, Y') }}</p>
-                        </div>
-                        @empty
-                        <div class="py-10">
-                            <p class="text-slate-500 text-xs italic leading-loose">Medical summaries and lab results will appear here once released by the clinical staff.</p>
-                        </div>
-                        @endforelse
-                    </div>
-
-                    <div class="mt-12 pt-8 border-t border-slate-800">
-                        <div class="flex items-center gap-3 bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
-                            <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
-                            <span class="text-[10px] font-bold text-slate-300">Vault Securely Encrypted</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-slate-800">Patient Dashboard</h1>
+            <p class="text-slate-500">Manage your health records and upcoming appointments.</p>
         </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 transition-hover hover:shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-calendar-check text-xl"></i>
+                    </div>
+                    @if(isset($daysLeft))
+                    <span
+                        class="text-xs font-bold px-2 py-1 rounded-full {{ $daysLeft <= 1 ? 'bg-orange-100 text-orange-600' : 'bg-teal-100 text-teal-700' }}">
+                        @if($daysLeft === 0) Today @elseif($daysLeft === 1) Tomorrow @else {{ $daysLeft }} Days Left
+                        @endif
+                    </span>
+                    @endif
+                </div>
+                <p class="text-sm font-medium text-slate-500 mb-1">Next Appointment</p>
+                <h3 class="text-xl font-bold text-slate-800">
+                    {{ $nextAppointment ? \Carbon\Carbon::parse($nextAppointment->appointment_date)->format('F d, Y') :
+                    'No upcoming visits' }}
+                </h3>
+                <p class="text-xs text-slate-400 mt-2">
+                    <i class="fa-solid fa-clock mr-1"></i>
+                    {{ $nextAppointment ? \Carbon\Carbon::parse($nextAppointment->appointment_time)->format('h:i A') :
+                    '--:--' }}
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 transition-hover hover:shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-file-medical text-xl"></i>
+                    </div>
+                </div>
+                <p class="text-sm font-medium text-slate-500 mb-1">Medical Records</p>
+                <h3 class="text-xl font-bold text-slate-800">{{ $records->count() }} Total Entries</h3>
+                <p class="text-xs text-slate-400 mt-2 italic">
+                    Updated: {{ $records->first() ? $records->first()->created_at->diffForHumans() : 'No records yet' }}
+                </p>
+            </div>
+
+            <div class="bg-teal-600 rounded-2xl p-6 shadow-lg shadow-teal-100 flex flex-col justify-between text-white">
+                <div>
+                    <h3 class="font-bold text-lg mb-1">Need Help?</h3>
+                    <p class="text-teal-100 text-sm">Contact the clinic for emergencies or account updates.</p>
+                </div>
+                <button
+                    class="mt-4 bg-white text-teal-600 text-sm font-bold py-2 rounded-lg hover:bg-teal-50 transition">
+                    Contact Clinic
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <h2 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical text-teal-500"></i>
+                    Clinical History
+                </h2>
+                <span class="text-xs font-medium text-slate-400 italic">Official documentation from your
+                    physician</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-100">
+                            <th class="px-6 py-4 font-semibold">Date</th>
+                            <th class="px-6 py-4 font-semibold">Diagnosis</th>
+                            <th class="px-6 py-4 font-semibold">Treatment & Doctor's Notes</th>
+                            <th class="px-6 py-4 font-semibold">Verification</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        @forelse($records as $record)
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="px-6 py-5">
+                                <span class="text-sm font-semibold text-slate-700 block">{{
+                                    $record->created_at->format('M d, Y') }}</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-tighter">{{
+                                    $record->created_at->format('h:i A') }}</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-100">
+                                    {{ $record->diagnosis }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <p class="text-sm text-slate-600 max-w-md leading-relaxed">
+                                    {{ $record->treatment ?: 'Observation. No specific treatment notes.' }}
+                                </p>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="flex items-center gap-1.5 text-xs font-medium text-green-600">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Official
+                                </span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-16 text-center">
+                                <div class="flex flex-col items-center">
+                                    <i class="fa-solid fa-folder-open text-slate-200 text-5xl mb-4"></i>
+                                    <p class="text-slate-400 font-medium italic">No medical history available yet.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
+
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center border-t border-slate-100 mt-10">
+        <p class="text-slate-400 text-xs">© {{ date('Y') }} HealthConnect Portal. All records are securely encrypted.
+        </p>
+    </footer>
+
 </body>
+
 </html>

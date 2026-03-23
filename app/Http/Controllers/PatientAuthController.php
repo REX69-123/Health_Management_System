@@ -2,118 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class PatientAuthController extends Controller
 {
     /**
-     * Show the Patient Login Form
+     * Show the patient login form
      */
     public function showLogin()
     {
-        if (Auth::check() && Auth::user()->role === 'patient') {
-            return redirect()->route('portal.dashboard');
-        }
-        return view('portal.login');
+        // Point this to a new dedicated patient login view
+        return view('auth.patient-login');
     }
 
     /**
-     * Show the Patient Registration Form
-     */
-    public function showRegister()
-    {
-        return view('portal.register');
-    }
-
-    /**
-     * Handle the Login Logic
+     * Handle Patient Login (No Registration Allowed)
      */
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        $remember = $request->boolean('remember');
+        // Use the 'patient' guard so Laravel knows THIS is a patient session
+        if (Auth::guard('patient')->attempt($credentials)) {
+            $user = Auth::guard('patient')->user();
 
-        if (Auth::attempt($credentials, $remember)) {
-            $user = Auth::user();
-
-            // STRICT WALL: Are they actually a patient?
+            // Extra security: check role
             if (strtolower($user->role) !== 'patient') {
-                Auth::logout(); // Kick them out of the patient portal
-                return back()->withErrors([
-                    'email' => 'Staff/Admins cannot log in here. Please use the Admin Login page.',
-                ]);
+                Auth::guard('patient')->logout();
+                return back()->withErrors(['email' => 'This account is not a patient.']);
             }
 
-            // They passed the test. Generate session and send to the 'portal' folder
             $request->session()->regenerate();
 
-            // This route should load a view like: return view('portal.dashboard');
-            return redirect()->route('portal.dashboard');
+            // Use intended() to ensure they go to the dashboard
+            return redirect()->intended(route('portal.dashboard'));
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
-    /**
-     * Handle the Registration Logic
-     */
-    public function register(Request $request)
-    {
-        // 1. Validate the new fields
-        $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'dob'      => 'required|date',
-            'gender'   => 'required|string|in:Male,Female,Other',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        // 2. Create User account (Authentication Data)
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => 'patient',
-        ]);
-
-        // Split name for clinical records
-        $nameParts = explode(' ', $request->name);
-
-        // 3. Create Patient Record (Clinical Data)
-        Patient::create([
-            'first_name'     => $nameParts[0],
-            'last_name'      => $nameParts[1] ?? 'Patient',
-            'email'          => $request->email,
-            'dob'            => $request->dob,
-            'gender'         => $request->gender,
-            'patient_number' => 'PAT-' . strtoupper(bin2hex(random_bytes(3))),
-            'status'         => 'Active'
-        ]);
-
-        // 4. INDUSTRY FIX: Redirect to login instead of dashboard
-        // We do NOT call Auth::login($user) here.
-        return redirect()->route('portal.login')->with('success', 'Registration successful! Please log in to your new account.');
-    }
-
-    /**
-     * Handle Portal Logout
-     */
     public function logout(Request $request)
     {
-        Auth::logout();
+        // 1. Specifically logout from the patient guard
+        Auth::guard('patient')->logout();
+
+        // 2. Invalidate the session to clear patient data
         $request->session()->invalidate();
+
+        // 3. Regenerate the CSRF token for security
         $request->session()->regenerateToken();
 
-        return redirect()->route('portal.login');
+        // 4. Redirect to the PATIENT login, not the admin one
+        return redirect()->route('portal.login')->with('success', 'Logged out successfully.');
     }
 }

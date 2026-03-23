@@ -9,24 +9,76 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    /**
-     * 1. Show Login Form
-     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
     /**
-     * 2. Show Register Form (CRITICAL: This was likely missing)
+     * Show Register Form
+     * Logic: Allows first-time setup OR requires being an logged-in Admin.
      */
     public function showRegisterForm()
     {
+        $anyUserExists = User::exists();
+
+        // 1. If the system is already set up, only logged-in Admins can see this page
+        if ($anyUserExists) {
+            if (!Auth::check()) {
+                return redirect()->route('login')->with('error', 'Registration is closed. Please login as Admin to add staff.');
+            }
+
+            if (Auth::user()->role !== 'admin') {
+                abort(403, 'Unauthorized. Only Administrators can access this page.');
+            }
+        }
+
         return view('auth.register');
     }
 
     /**
-     * 3. Handle Login
+     * Handle Account Creation
+     */
+    public function register(Request $request)
+    {
+        $anyUserExists = User::exists();
+
+        // Security check for existing systems
+        if ($anyUserExists) {
+            if (!Auth::check() || Auth::user()->role !== 'admin') {
+                abort(403, 'Unauthorized action.');
+            }
+        }
+
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Industry Standard Logic:
+        // If DB is empty, user is 'admin'. Otherwise, they are assigned 'staff'.
+        $role = !$anyUserExists ? 'admin' : 'staff';
+
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => $role,
+        ]);
+
+        // If this was the initial setup, log them in automatically
+        if (!$anyUserExists) {
+            Auth::login($user);
+            return redirect()->route('patients.index')->with('success', 'Admin account created successfully!');
+        }
+
+        // If an Admin was adding a staff member, redirect back with success
+        return redirect()->route('patients.index')->with('success', "New staff member ({$user->name}) added successfully!");
+    }
+
+    /**
+     * Handle Login
      */
     public function authenticate(Request $request)
     {
@@ -35,63 +87,35 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        // FIXED: Added the missing $remember variable check
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
-            $role = strtolower($user->role);
+            $role = strtolower($user->role ?? '');
 
-            // STRICT WALL: Are they Admin or Staff?
+            // Strict Role Access: Only admin and staff can access management area
             if (!in_array($role, ['admin', 'staff'])) {
-                Auth::logout(); // Kick the patient out of the admin panel
-                return back()->withErrors([
-                    'email' => 'Patients cannot access the Admin panel. Please use the Patient Portal.',
-                ]);
+                Auth::logout();
+                return back()->withErrors(['email' => 'Access denied. Use the Patient Portal for patient logins.']);
             }
 
-            // They passed the test. Generate session and send to the 'patient' folder
             $request->session()->regenerate();
-
-            // This route should load a view like: return view('patient.index');
-            return redirect()->route('patients.index');
+            return redirect()->intended(route('patients.index'));
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
     }
 
     /**
-     * 4. Handle Registration
-     */
-    public function register(Request $request)
-    {
-        // 1. Validation
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        // 2. Create User in MySQL
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // 3. Redirect to Login with a success "flash" message
-        return redirect()->route('login')->with('success', 'Account created! Please log in.');
-    }
-
-    /**
-     * 5. Handle Logout
+     * Handle Logout
      */
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 }
