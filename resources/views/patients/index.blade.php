@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Dashboard - ClinicAdmin</title>
+    <title>Patient Dashboard - Health Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -19,7 +19,7 @@
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
         <div
             class="h-16 flex items-center px-6 border-b border-slate-800 font-bold text-white text-xl uppercase tracking-wider">
-            ClinicAdmin
+            Health Portal
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
             <a href="{{ route('patients.index') }}"
@@ -77,7 +77,7 @@
     <main class="flex-1 flex flex-col h-screen overflow-y-auto">
         <header
             class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm shrink-0">
-            <h1 class="text-xl font-semibold text-slate-800">Staff Dashboard</h1>
+            <h1 class="text-xl font-semibold text-slate-800">Patient Management</h1>
             <a href="{{ route('patients.create') }}"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 + Add New Patient

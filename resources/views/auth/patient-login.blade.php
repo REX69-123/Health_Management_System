@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Portal | Secure Login</title>
+    <title>Patient Portal Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet">
@@ -20,14 +20,15 @@
     <div class="w-full max-w-md">
         <div class="text-center mb-8">
             <div
-                class="inline-flex items-center justify-center w-14 h-14 bg-slate-900 rounded-2xl mb-4 shadow-xl shadow-slate-200">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                class="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-2xl mb-4 shadow-xl shadow-slate-200">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                    </path>
                 </svg>
             </div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h1>
-            <p class="text-slate-500 mt-2 font-medium">Access your secure patient dashboard</p>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">HEALTH PORTAL</h1>
+            <p class="text-slate-500 mt-2 font-medium">Access your dashboard</p>
         </div>
 
         <div
@@ -86,7 +87,7 @@
                 </div>
 
                 <button type="submit"
-                    class="w-full bg-slate-900 hover:bg-black text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-200 transition-all hover:shadow-2xl active:scale-[0.98] mt-2 flex items-center justify-center gap-2">
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-200 transition-all hover:shadow-2xl active:scale-[0.98] mt-2 flex items-center justify-center gap-2">
                     Sign In to Portal
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

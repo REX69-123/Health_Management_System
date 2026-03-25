@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Portal | ClinicAdmin</title>
+    <title>Patient Portal - Health Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,10 +22,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 flex items-center text-teal-600">
+                    <div class="flex-shrink-0 flex items-center text-blue-600">
                         <i class="fa-solid fa-house-chimney-medical text-2xl mr-2"></i>
                         <span class="font-bold text-xl tracking-tight text-slate-800">Health<span
-                                class="text-teal-600">Connect</span></span>
+                                class="text-blue-600">Connect</span></span>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -58,12 +58,12 @@
 
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 transition-hover hover:shadow-md">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                         <i class="fa-solid fa-calendar-check text-xl"></i>
                     </div>
                     @if(isset($daysLeft))
                     <span
-                        class="text-xs font-bold px-2 py-1 rounded-full {{ $daysLeft <= 1 ? 'bg-orange-100 text-orange-600' : 'bg-teal-100 text-teal-700' }}">
+                        class="text-xs font-bold px-2 py-1 rounded-full {{ $daysLeft <= 1 ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-700' }}">
                         @if($daysLeft === 0) Today @elseif($daysLeft === 1) Tomorrow @else {{ $daysLeft }} Days Left
                         @endif
                     </span>
@@ -94,13 +94,13 @@
                 </p>
             </div>
 
-            <div class="bg-teal-600 rounded-2xl p-6 shadow-lg shadow-teal-100 flex flex-col justify-between text-white">
+            <div class="bg-blue-600 rounded-2xl p-6 shadow-lg shadow-blue-100 flex flex-col justify-between text-white">
                 <div>
                     <h3 class="font-bold text-lg mb-1">Need Help?</h3>
-                    <p class="text-teal-100 text-sm">Contact the clinic for emergencies or account updates.</p>
+                    <p class="text-blue-100 text-sm">Contact the clinic for emergencies or account updates.</p>
                 </div>
                 <button
-                    class="mt-4 bg-white text-teal-600 text-sm font-bold py-2 rounded-lg hover:bg-teal-50 transition">
+                    class="mt-4 bg-white text-blue-600 text-sm font-bold py-2 rounded-lg hover:bg-blue-50 transition">
                     Contact Clinic
                 </button>
             </div>
@@ -109,7 +109,7 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                 <h2 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-notes-medical text-teal-500"></i>
+                    <i class="fa-solid fa-notes-medical text-blue-500"></i>
                     Clinical History
                 </h2>
                 <span class="text-xs font-medium text-slate-400 italic">Official documentation from your
@@ -137,7 +137,7 @@
                             </td>
                             <td class="px-6 py-5">
                                 <div
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-100">
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                                     {{ $record->diagnosis }}
                                 </div>
                             </td>

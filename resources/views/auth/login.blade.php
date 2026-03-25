@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - HealthCare+ Management</title>
+    <title>Staff Login</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -13,7 +13,7 @@
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <div class="flex justify-center">
-            <div class="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
@@ -21,8 +21,8 @@
                 </svg>
             </div>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-slate-900">Welcome back</h2>
-        <p class="mt-2 text-center text-sm text-slate-600">Secure access to your health portal</p>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-slate-900">HEALTH PORTAL</h2>
+        <p class="mt-2 text-center text-sm text-slate-600">Your health portal</p>
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -83,7 +83,7 @@
 
                 <div>
                     <button type="submit"
-                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-150">
+                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-150">
                         Sign in securely
                     </button>
                 </div>

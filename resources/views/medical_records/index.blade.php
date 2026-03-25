@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Records - ClinicAdmin</title>
+    <title>Medical Records - Health Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -13,7 +13,7 @@
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
         <div
             class="h-16 flex items-center px-6 border-b border-slate-800 font-bold text-white text-xl uppercase tracking-wider">
-            ClinicAdmin
+            Health Portal
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
             <a href="{{ route('patients.index') }}"
