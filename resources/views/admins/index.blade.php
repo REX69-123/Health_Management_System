@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Dashboard - Health Portal</title>
+    <title>Manage Admins - Health Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -14,7 +14,7 @@
     </style>
 </head>
 
-<body class="bg-slate-50 flex h-screen overflow-hidden" x-data="{ selectedPatient: null }">
+<body class="bg-slate-50 flex h-screen overflow-hidden" x-data="{ selectedAdmin: null }">
 
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
         <div
@@ -102,10 +102,10 @@
     <main class="flex-1 flex flex-col h-screen overflow-y-auto">
         <header
             class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm shrink-0">
-            <h1 class="text-xl font-semibold text-slate-800">Patient Management</h1>
-            <a href="{{ route('patients.create') }}"
+            <h1 class="text-xl font-semibold text-slate-800">Administrator Management</h1>
+            <a href="{{ route('admins.create') }}"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                + Add New Patient
+                + Add New Admin
             </a>
         </header>
 
@@ -123,23 +123,23 @@
             @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <a href="{{ route('patients.index') }}"
+                <a href="{{ route('admins.index') }}"
                     class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center hover:shadow-md transition-shadow cursor-pointer">
                     <div
                         class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold mr-4">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
                             </path>
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Total Registered Patients</p>
-                        <p class="text-2xl font-bold text-slate-800">{{ $totalPatients ?? 0 }}</p>
+                        <p class="text-sm font-medium text-slate-500">Total System Admins</p>
+                        <p class="text-2xl font-bold text-slate-800">{{ $totalAdmins ?? 0 }}</p>
                     </div>
                 </a>
 
-                <a href="{{ route('patients.index', ['status' => 'Active']) }}"
+                <a href="{{ route('admins.index', ['status' => 'Active']) }}"
                     class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center border-l-4 border-l-emerald-500 hover:shadow-md transition-shadow cursor-pointer">
                     <div
                         class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl font-bold mr-4">
@@ -149,18 +149,18 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Currently Active</p>
-                        <p class="text-2xl font-bold text-slate-800">{{ $activePatients ?? 0 }}</p>
+                        <p class="text-sm font-medium text-slate-500">Active Accounts</p>
+                        <p class="text-2xl font-bold text-slate-800">{{ $activeAdmins ?? $totalAdmins ?? 0 }}</p>
                     </div>
                 </a>
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
-                    <h2 class="font-semibold text-slate-800">Patient Directory</h2>
+                    <h2 class="font-semibold text-slate-800">Admin Directory</h2>
                 </div>
 
-                <form action="{{ route('patients.index') }}" method="GET"
+                <form action="{{ route('admins.index') }}" method="GET"
                     class="bg-white p-4 border-b border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
 
                     <div class="relative w-full md:w-1/3">
@@ -171,20 +171,11 @@
                             </svg>
                         </div>
                         <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Search name, ID, or email..."
+                            placeholder="Search name or email..."
                             class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-slate-400">
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto items-center">
-
-                        <select name="status" onchange="this.form.submit()"
-                            class="w-full md:w-auto px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-slate-50 text-slate-700 cursor-pointer">
-                            <option value="">All Statuses</option>
-                            <option value="Active" {{ request('status')=='Active' ? 'selected' : '' }}>Active Only
-                            </option>
-                            <option value="Inactive" {{ request('status')=='Inactive' ? 'selected' : '' }}>Inactive Only
-                            </option>
-                        </select>
 
                         <select name="sort" onchange="this.form.submit()"
                             class="w-full md:w-auto px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-slate-50 text-slate-700 cursor-pointer">
@@ -198,8 +189,8 @@
                             </option>
                         </select>
 
-                        @if(request()->anyFilled(['search', 'status', 'sort']))
-                        <a href="{{ route('patients.index') }}"
+                        @if(request()->anyFilled(['search', 'sort']))
+                        <a href="{{ route('admins.index') }}"
                             class="text-sm font-semibold text-red-500 hover:text-red-700 transition-colors px-2">
                             Clear
                         </a>
@@ -217,7 +208,7 @@
                         <thead>
                             <tr
                                 class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
-                                <th class="p-4 font-medium w-1/6">Patient ID</th>
+                                <th class="p-4 font-medium w-1/6">Admin ID</th>
                                 <th class="p-4 font-medium w-1/4">Full Name</th>
                                 <th class="p-4 font-medium w-1/4">Email</th>
                                 <th class="p-4 font-medium w-1/6">Status</th>
@@ -225,43 +216,43 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-slate-700">
-                            @forelse($patients as $patient)
+                            @forelse($admins as $admin)
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="p-4 text-sm text-slate-500 font-mono">{{ $patient->patient_number }}</td>
+                                <td class="p-4 text-sm text-slate-500 font-mono">ADM-{{ str_pad($admin->id, 4, '0',
+                                    STR_PAD_LEFT) }}</td>
 
                                 <td class="p-4">
                                     @php
-                                    $patientData = [
-                                    'id' => $patient->id,
-                                    'name' => $patient->first_name . ' ' . $patient->last_name,
-                                    'number' => $patient->patient_number,
-                                    'email' => $patient->email,
-                                    'dob' => \Carbon\Carbon::parse($patient->dob)->format('F d, Y'),
-                                    'gender' => $patient->gender,
-                                    'status' => $patient->status,
-                                    'edit_url' => route('patients.edit', $patient->id)
+                                    $adminData = [
+                                    'id' => $admin->id,
+                                    'name' => $admin->name,
+                                    'number' => 'ADM-' . str_pad($admin->id, 4, '0', STR_PAD_LEFT),
+                                    'email' => $admin->email,
+                                    'joined' => $admin->created_at ? $admin->created_at->format('F d, Y') : 'N/A',
+                                    'status' => 'Active',
+                                    'edit_url' => route('admins.edit', $admin->id)
                                     ];
                                     @endphp
 
-                                    <button @click='selectedPatient = @json($patientData)'
+                                    <button @click='selectedAdmin = @json($adminData)'
                                         class="font-medium text-blue-600 hover:text-blue-800 text-left underline decoration-blue-100 underline-offset-4 decoration-2">
-                                        {{ $patient->first_name }} {{ $patient->last_name }}
+                                        {{ $admin->name }}
                                     </button>
                                 </td>
 
-                                <td class="p-4 text-sm">{{ $patient->email }}</td>
+                                <td class="p-4 text-sm">{{ $admin->email }}</td>
                                 <td class="p-4">
                                     <span
-                                        class="px-3 py-1 {{ $patient->status == 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600' }} rounded-full text-xs font-semibold">
-                                        {{ $patient->status }}
+                                        class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">
+                                        Active
                                     </span>
                                 </td>
                                 <td class="p-4 text-right flex justify-end items-center space-x-4">
-                                    <a href="{{ route('patients.edit', $patient->id) }}"
+                                    <a href="{{ route('admins.edit', $admin->id) }}"
                                         class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Update</a>
 
-                                    <form action="{{ route('patients.destroy', $patient->id) }}" method="POST"
-                                        onsubmit="return confirm('Remove this patient from the database?');">
+                                    <form action="{{ route('admins.destroy', $admin->id) }}" method="POST"
+                                        onsubmit="return confirm('Remove this administrator from the database?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
@@ -271,7 +262,8 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="p-12 text-center text-slate-400">No patient records found.</td>
+                                <td colspan="5" class="p-12 text-center text-slate-400">No administrator records found.
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -280,28 +272,28 @@
             </div>
         </div>
 
-        <div x-show="selectedPatient" style="display: none;"
+        <div x-show="selectedAdmin" style="display: none;"
             class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
 
-            <div @click.outside="selectedPatient = null" x-data="{ activeTab: 'profile' }"
+            <div @click.outside="selectedAdmin = null" x-data="{ activeTab: 'profile' }"
                 class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
 
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                    <h3 class="font-bold text-lg text-slate-800" x-text="selectedPatient?.name"></h3>
+                    <h3 class="font-bold text-lg text-slate-800" x-text="selectedAdmin?.name"></h3>
                     <span class="text-xs font-mono bg-blue-100 text-blue-700 px-2 py-1 rounded-md"
-                        x-text="selectedPatient?.number"></span>
+                        x-text="selectedAdmin?.number"></span>
                 </div>
 
                 <div class="flex border-b border-slate-200 px-6 pt-2 bg-slate-50/30">
                     <button @click="activeTab = 'profile'"
                         :class="activeTab === 'profile' ? 'border-blue-600 text-blue-700 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
                         class="px-4 py-2 border-b-2 text-sm transition-colors">
-                        Medical Profile
+                        Admin Details
                     </button>
                     <button @click="activeTab = 'account'"
                         :class="activeTab === 'account' ? 'border-blue-600 text-blue-700 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
                         class="px-4 py-2 border-b-2 text-sm transition-colors">
-                        Portal Account Info
+                        System Access Info
                     </button>
                 </div>
 
@@ -309,42 +301,42 @@
                     <div x-show="activeTab === 'profile'" class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <p class="text-xs font-bold uppercase text-slate-400 mb-1">Date of Birth</p>
-                                <p class="text-sm text-slate-800 font-medium" x-text="selectedPatient?.dob"></p>
+                                <p class="text-xs font-bold uppercase text-slate-400 mb-1">Date Joined</p>
+                                <p class="text-sm text-slate-800 font-medium" x-text="selectedAdmin?.joined"></p>
                             </div>
                             <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                <p class="text-xs font-bold uppercase text-slate-400 mb-1">Gender</p>
-                                <p class="text-sm text-slate-800 font-medium" x-text="selectedPatient?.gender"></p>
+                                <p class="text-xs font-bold uppercase text-slate-400 mb-1">System Role</p>
+                                <p class="text-sm text-slate-800 font-medium">Administrator</p>
                             </div>
                         </div>
                         <div
                             class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                            <p class="text-xs font-bold uppercase text-emerald-600">Patient Status</p>
-                            <span class="text-sm font-bold text-emerald-700" x-text="selectedPatient?.status"></span>
+                            <p class="text-xs font-bold uppercase text-emerald-600">Account Status</p>
+                            <span class="text-sm font-bold text-emerald-700" x-text="selectedAdmin?.status"></span>
                         </div>
                     </div>
 
                     <div x-show="activeTab === 'account'" style="display: none;" class="space-y-4">
                         <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <p class="text-xs font-bold uppercase text-blue-600 mb-1">Portal Login Email</p>
-                            <p class="text-sm text-slate-800 font-medium" x-text="selectedPatient?.email"></p>
+                            <p class="text-xs font-bold uppercase text-blue-600 mb-1">System Login Email</p>
+                            <p class="text-sm text-slate-800 font-medium" x-text="selectedAdmin?.email"></p>
                         </div>
                         <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <p class="text-xs font-bold uppercase text-slate-500 mb-1">Portal Password</p>
+                            <p class="text-xs font-bold uppercase text-slate-500 mb-1">Account Password</p>
                             <p class="text-sm text-slate-700 font-mono tracking-widest">••••••••</p>
-                            <p class="text-xs text-slate-400 mt-2">Passwords are encrypted. To reset this patient's
+                            <p class="text-xs text-slate-400 mt-2">Passwords are encrypted. To reset this admin's
                                 password, click Edit below.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                    <a :href="selectedPatient?.edit_url"
+                    <a :href="selectedAdmin?.edit_url"
                         class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
-                        Edit Patient
+                        Edit Administrator
                     </a>
 
-                    <button @click="selectedPatient = null"
+                    <button @click="selectedAdmin = null"
                         class="bg-white border border-slate-300 px-6 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors">
                         Close
                     </button>

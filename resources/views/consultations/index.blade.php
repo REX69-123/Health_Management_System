@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - ClinicAdmin</title>
+    <title>Consultations | Health Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-slate-50 flex h-screen overflow-hidden">
+<body class="bg-slate-50 flex h-screen overflow-hidden text-slate-800">
 
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
         <div
@@ -93,85 +93,93 @@
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center px-8 shadow-sm shrink-0">
-            <h1 class="text-xl font-semibold text-slate-800">Account Settings</h1>
-        </header>
+    <main class="flex-1 overflow-y-auto">
+        <div class="p-8 max-w-7xl mx-auto">
 
-        <div class="p-8 max-w-4xl mx-auto w-full">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">Clinic Consultations</h1>
+                    <p class="text-slate-500 text-sm mt-1">Manage all daily patient visits and medical logs.</p>
+                </div>
+                <a href="{{ route('consultations.create') }}"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-colors shadow-sm">
+                    + Log New Visit
+                </a>
+            </div>
 
             @if(session('success'))
             <div
-                class="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 flex justify-between items-center rounded-r-lg shadow-sm">
-                <span class="font-medium">{{ session('success') }}</span>
+                class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm font-medium">
+                {{ session('success') }}
             </div>
             @endif
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-                    <h2 class="text-lg font-bold text-slate-800">Personal Information</h2>
-                    <p class="text-sm text-slate-500">Update your account's profile information and email address.</p>
-                </div>
-
-                <form action="{{ route('profile.update') }}" method="POST" class="p-6">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-                            <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}"
-                                class="w-full px-4 py-2 border @error('name') border-red-500 @else border-slate-300 @enderror rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                            @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                            <input type="email" name="email" value="{{ old('email', auth()->user()->email) }}"
-                                class="w-full px-4 py-2 border @error('email') border-red-500 @else border-slate-300 @enderror rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                            @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-end">
-                        <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg shadow-md transition-all active:scale-95">
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
-
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-                    <h2 class="text-lg font-bold text-slate-800">Update Password</h2>
-                    <p class="text-sm text-slate-500">Ensure your account is using a long, random password to stay
-                        secure.</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                                <th class="px-6 py-4 font-semibold">Date / Time</th>
+                                <th class="px-6 py-4 font-semibold">Patient Name</th>
+                                <th class="px-6 py-4 font-semibold">Chief Complaint</th>
+                                <th class="px-6 py-4 font-semibold">Status</th>
+                                <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($consultations as $consultation)
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 text-sm font-medium text-slate-800">
+                                    {{ $consultation->created_at->format('M d, Y') }}<br>
+                                    <span class="text-xs text-slate-400 font-normal">{{
+                                        $consultation->created_at->format('h:i A') }}</span>
+                                </td>
+                                <td class="px-6 py-4 font-bold text-blue-600">
+                                    {{ $consultation->patient->first_name ?? 'Unknown' }} {{
+                                    $consultation->patient->last_name ?? 'Patient' }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-600 line-clamp-2">
+                                    {{ $consultation->chief_complaint }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($consultation->status == 'Completed')
+                                    <span
+                                        class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Completed</span>
+                                    @else
+                                    <span
+                                        class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Pending
+                                        Review</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-right text-sm font-medium space-x-3">
+                                    <a href="{{ route('consultations.show', $consultation) }}"
+                                        class="text-slate-500 hover:text-slate-800 transition-colors">View</a>
+                                    <a href="{{ route('consultations.edit', $consultation) }}"
+                                        class="text-blue-600 hover:text-blue-800 transition-colors">Edit</a>
+
+                                    <form action="{{ route('consultations.destroy', $consultation) }}" method="POST"
+                                        class="inline-block"
+                                        onsubmit="return confirm('Delete this consultation record completely?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="text-red-500 hover:text-red-700 transition-colors">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                            @if($consultations->isEmpty())
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-slate-400">No consultations logged
+                                    yet.</td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
-
-                <form action="{{ route('profile.update') }}" method="POST" class="p-6">
-                    @csrf
-                    <div class="space-y-4 max-w-md">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
-                            <input type="password" name="password"
-                                class="w-full px-4 py-2 border @error('password') border-red-500 @else border-slate-300 @enderror rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                            @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
-                            <input type="password" name="password_confirmation"
-                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-end">
-                        <button type="submit"
-                            class="bg-slate-800 hover:bg-slate-900 text-white font-medium px-6 py-2 rounded-lg shadow-md transition-all active:scale-95">
-                            Update Password
-                        </button>
-                    </div>
-                </form>
             </div>
+
         </div>
     </main>
 </body>

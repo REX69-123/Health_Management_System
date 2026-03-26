@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\PatientPortalController;
 use App\Http\Controllers\PatientAuthController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,18 @@ use App\Http\Controllers\PatientAuthController;
 Route::get('/', function () {
     return redirect()->route('portal.login');
 });
+
+// Admin Management Routes
+Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
+Route::get('/admins/create', [AdminController::class, 'create'])->name('admins.create'); // New!
+Route::post('/admins', [AdminController::class, 'store'])->name('admins.store');
+Route::get('/admins/{admin}/edit', [AdminController::class, 'edit'])->name('admins.edit');
+Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.update');
+Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
+use App\Http\Controllers\ConsultationController;
+
+// Add this inside your authenticated group:
+Route::resource('consultations', ConsultationController::class);
 
 /*
 |--------------------------------------------------------------------------

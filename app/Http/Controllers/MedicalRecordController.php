@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use App\Models\Consultation;
 
 class MedicalRecordController extends Controller
 {
@@ -29,6 +30,19 @@ class MedicalRecordController extends Controller
 
         return view('medical_records.index', compact('records'));
     }
+
+    public function show(Patient $patient)
+{
+    // 1. Fetch ONLY the completed consultations for this specific patient
+    // latest() sorts them so the newest visit is at the top of the timeline
+    $consultations = Consultation::where('patient_id', $patient->id)
+                        ->where('status', 'Completed')
+                        ->latest()
+                        ->get();
+
+    // 2. Pass both the patient AND the consultations to the view
+    return view('medical-records.show', compact('patient', 'consultations'));
+}
 
     // CREATE form
     public function create()
