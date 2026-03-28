@@ -9,40 +9,31 @@ use App\Models\Consultation;
 
 class MedicalRecordController extends Controller
 {
-    // READ (with Filter & Sort)
-    public function index(Request $request)
+    public function index()
     {
-        $query = MedicalRecord::with('patient');
+        // Fetch COMPLETED consultations to act as medical records
+        $records = \App\Models\Consultation::with('patient')
+            ->where('status', 'Completed')
+            ->latest()
+            ->paginate(10); // Use paginate instead of get()
 
-        // Filter by Patient Name
-        if ($request->filled('search')) {
-            $query->whereHas('patient', function($q) use ($request) {
-                $q->where('first_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('last_name', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        // Sort by Diagnosis Date
-        $sort = $request->get('sort', 'desc');
-        $query->orderBy('diagnosis_date', $sort);
-
-        $records = $query->paginate(10);
-
-        return view('medical_records.index', compact('records'));
+        return view('medical-records.index', compact('records'));
     }
+    
+    public function show($id)
+    {
+        $patient = Patient::findOrFail($id);
+        $consultations = Consultation::where('patient_id', $id)
+            ->where('status', 'Completed')
+            ->latest()
+            ->get();
 
-    public function show(Patient $patient)
-{
-    // 1. Fetch ONLY the completed consultations for this specific patient
-    // latest() sorts them so the newest visit is at the top of the timeline
-    $consultations = Consultation::where('patient_id', $patient->id)
-                        ->where('status', 'Completed')
-                        ->latest()
-                        ->get();
+        // Calculate basic stats for the UI
+        $lastVisit = $consultations->first()?->created_at->format('M d, Y') ?? 'No visits';
+        $visitCount = $consultations->count();
 
-    // 2. Pass both the patient AND the consultations to the view
-    return view('medical-records.show', compact('patient', 'consultations'));
-}
+        return view('medical-records.show', compact('patient', 'consultations', 'lastVisit', 'visitCount'));
+    }
 
     // CREATE form
     public function create()

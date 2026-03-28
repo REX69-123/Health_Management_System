@@ -11,26 +11,21 @@ class PatientPortalController extends Controller
 {
     public function dashboard()
     {
+        // 1. Force the guard to 'patient' to get the logged-in patient's data
         $patient = Auth::guard('patient')->user();
 
-        // Check if the appointments table uses 'patient_id' (integer)
-        // or a string identifier like the one seen in your screenshot
-        $nextAppointment = Appointment::where('patient_id', $patient->id)
-            ->where('appointment_date', '>=', now()->toDateString())
-            ->orderBy('appointment_date', 'asc')
-            ->first();
+        // 2. If no one is logged in, send them back to login
+        if (!$patient) {
+            return redirect()->route('portal.login');
+        }
 
-        // Do the same for Medical Records
-        $records = MedicalRecord::where('patient_id', $patient->id)
+        // 3. Get their records
+        $consultations = \App\Models\Consultation::where('patient_id', $patient->id)
+            ->where('status', 'Completed')
             ->latest()
             ->get();
 
-        // Calculate days left (same logic as before)
-        $daysLeft = null;
-        if ($nextAppointment) {
-            $daysLeft = (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($nextAppointment->appointment_date), false);
-        }
-
-        return view('portal.dashboard', compact('patient', 'nextAppointment', 'daysLeft', 'records'));
+        // 4. CRITICAL: You must include 'patient' in the compact() call
+        return view('portal.dashboard', compact('patient', 'consultations'));
     }
 }

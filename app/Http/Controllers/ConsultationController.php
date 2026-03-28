@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Consultation;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ConsultationController extends Controller
 {
+
     // READ: Show the table of all consultations
     public function index()
     {
@@ -19,7 +21,7 @@ class ConsultationController extends Controller
     // CREATE: Show the form
     public function create()
     {
-        $patients = Patient::orderBy('last_name')->get(); // Get patients for the dropdown
+        $patients = Patient::orderBy('last_name')->get();
         return view('consultations.create', compact('patients'));
     }
 
@@ -32,21 +34,51 @@ class ConsultationController extends Controller
             'status' => 'required|in:Pending Doctor Review,Completed',
         ]);
 
-        Consultation::create([
-            'patient_id' => $request->patient_id,
-            'admin_id' => $request->user()->id,
-            'blood_pressure' => $request->blood_pressure,
-            'heart_rate' => $request->heart_rate,
-            'temperature' => $request->temperature,
-            'weight_kg' => $request->weight_kg,
+        $consultation = Consultation::create([
+            'patient_id'      => $request->patient_id,
+            'admin_id'        => Auth::id(),
+            'blood_pressure'  => $request->blood_pressure,
+            'heart_rate'      => $request->heart_rate,
+            'temperature'     => $request->temperature,
+            'weight_kg'       => $request->weight_kg,
             'chief_complaint' => $request->chief_complaint,
-            'assessment' => $request->assessment,
-            'diagnosis' => $request->diagnosis,
-            'prescription' => $request->prescription,
-            'status' => $request->status,
+            'assessment'      => $request->assessment,
+            'diagnosis'       => $request->diagnosis,
+            'prescription'    => $request->prescription,
+            'status'          => $request->status,
         ]);
 
-        return redirect()->route('consultations.index')->with('success', 'Consultation logged successfully.');
+        // THE REDIRECT LOGIC: Redirect based on status
+        if ($consultation->status === 'Completed') {
+            // Redirects to the list of all Medical Records
+            return redirect()->route('medical-records.index')
+                ->with('success', 'Consultation finalized and added to Medical Records table.');
+        }
+
+        return redirect()->route('consultations.index')
+            ->with('success', 'Consultation saved as pending.');
+    }
+
+    // UPDATE: Save changes
+    public function update(Request $request, Consultation $consultation)
+    {
+        $request->validate([
+            'chief_complaint' => 'required|string',
+            'status'          => 'required|in:Pending Doctor Review,Completed',
+        ]);
+
+        // Fill all data from request
+        $consultation->update($request->all());
+
+        // THE REDIRECT LOGIC: Redirect based on status
+        if ($consultation->status === 'Completed') {
+            // Redirects to the list of all Medical Records
+            return redirect()->route('medical-records.index')
+                ->with('success', 'Record updated and moved to Medical Records table.');
+        }
+
+        return redirect()->route('consultations.index')
+            ->with('success', 'Consultation updated successfully.');
     }
 
     // READ: View a single consultation record
@@ -60,44 +92,6 @@ class ConsultationController extends Controller
     {
         $patients = Patient::orderBy('last_name')->get();
         return view('consultations.edit', compact('consultation', 'patients'));
-    }
-
-    // UPDATE: Save the edited changes
-    public function update(Request $request, Consultation $consultation)
-    {
-        $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'chief_complaint' => 'required|string',
-            'status' => 'required|in:Pending Doctor Review,Completed',
-        ]);
-
-        $consultation->update([
-            'patient_id' => $request->patient_id,
-            'blood_pressure' => $request->blood_pressure,
-            'heart_rate' => $request->heart_rate,
-            'temperature' => $request->temperature,
-            'weight_kg' => $request->weight_kg,
-            'chief_complaint' => $request->chief_complaint,
-            'assessment' => $request->assessment,
-            'diagnosis' => $request->diagnosis,
-            'prescription' => $request->prescription,
-            'status' => $request->status,
-        ]);
-
-        if ($request->status === 'Completed' && $request->diagnosis) {
-            $patient = $consultation->patient;
-
-            // Check if the diagnosis isn't already in their notes to avoid duplicates
-            if (!str_contains($patient->chronic_conditions ?? '', $request->diagnosis)) {
-                $newConditions = $patient->chronic_conditions
-                    ? $patient->chronic_conditions . ', ' . $request->diagnosis
-                    : $request->diagnosis;
-
-                $patient->update(['chronic_conditions' => $newConditions]);
-            }
-        }
-
-        return redirect()->route('consultations.index')->with('success', 'Consultation updated successfully.');
     }
 
     // DELETE: Remove the record

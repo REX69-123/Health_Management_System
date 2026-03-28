@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Patient extends Model
 {
@@ -16,4 +17,9 @@ class Patient extends Model
         'gender',
         'status'
     ];
+    public function getAgeAttribute()
+    {
+        if (!$this->dob) return 'N/A';
+        return \Carbon\Carbon::parse($this->dob)->age;
+    }
 }

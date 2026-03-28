@@ -149,54 +149,26 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-sm">
                         @forelse($records as $record)
-                        <tr class="hover:bg-slate-50/80 transition-colors group">
-                            <td class="p-5">
-                                <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                        <tr>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-bold text-slate-700">
                                     {{ $record->patient->first_name }} {{ $record->patient->last_name }}
                                 </div>
-                                <div class="text-xs text-slate-400 font-mono">{{ $record->patient->patient_number }}
-                                </div>
+                                <div class="text-xs text-slate-500">ID: #{{ $record->patient_id }}</div>
                             </td>
-                            <td class="p-5">
-                                <span
-                                    class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase mr-2">Dx</span>
-                                <span class="text-slate-700 italic">"{{ $record->diagnosis }}"</span>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-slate-700 font-medium">{{ $record->diagnosis ?? 'N/A' }}</div>
+                                <div class="text-xs text-slate-500 truncate max-w-xs">{{ $record->prescription }}</div>
                             </td>
-                            <td class="p-5 text-slate-600">
-                                {{ \Carbon\Carbon::parse($record->diagnosis_date)->format('M d, Y') }}
+                            <td class="px-6 py-4 text-sm text-slate-600">
+                                {{ $record->created_at->format('M d, Y') }}
                             </td>
-                            <td class="p-5 text-right space-x-3">
-                                <a href="{{ route('medical-records.edit', $record->id) }}"
-                                    class="text-slate-600 hover:text-blue-600 font-bold">Edit</a>
-                                <form action="{{ route('medical-records.destroy', $record->id) }}" method="POST"
-                                    class="inline">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-400 hover:text-red-600 font-bold"
-                                        onclick="return confirm('Archive this record?')">Delete</button>
-                                </form>
+                            <td class="px-6 py-4 text-right text-sm">
+                                <a href="{{ route('medical-records.show', $record->patient_id) }}"
+                                    class="text-blue-600 hover:underline font-medium">View History</a>
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="4" class="p-20 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <div class="bg-slate-100 p-4 rounded-full mb-4">
-                                        <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path
-                                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-lg font-bold text-slate-800">No medical records found</h3>
-                                    <p class="text-slate-500 max-w-xs mx-auto mt-1">Start by adding a new diagnosis or
-                                        treatment plan for your patients.</p>
-                                    <a href="{{ route('medical-records.create') }}"
-                                        class="mt-6 text-blue-600 font-bold hover:underline">+ Create the first
-                                        record</a>
-                                </div>
-                            </td>
-                        </tr>
                         @endforelse
                     </tbody>
                 </table>
