@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Patient;
-use App\Models\User;
+// Remove App\Models\User if patients shouldn't be in the admin table
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -12,10 +12,9 @@ class PatientController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Start the main table query
-        $query = \App\Models\Patient::query();
+        $query = Patient::query();
 
-        // 2. SEARCH LOGIC
+        // SEARCH LOGIC
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -26,39 +25,33 @@ class PatientController extends Controller
             });
         }
 
-        // 3. FILTER LOGIC
+        // FILTER LOGIC
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // 4. SORT LOGIC
-        if ($request->filled('sort')) {
-            switch ($request->sort) {
-                case 'name_asc':
-                    $query->orderBy('first_name', 'asc');
-                    break;
-                case 'name_desc':
-                    $query->orderBy('first_name', 'desc');
-                    break;
-                case 'oldest':
-                    $query->oldest();
-                    break;
-                case 'newest':
-                default:
-                    $query->latest();
-                    break;
-            }
-        } else {
-            $query->latest();
+        // SORT LOGIC
+        $sort = $request->get('sort', 'newest');
+        switch ($sort) {
+            case 'name_asc':
+                $query->orderBy('first_name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('first_name', 'desc');
+                break;
+            case 'oldest':
+                $query->oldest();
+                break;
+            default:
+                $query->latest();
+                break;
         }
 
-        $patients = $query->get();
+        $patients = $query->paginate(10); // Use paginate for industry-level performance
 
-        // --- NEW: Calculate Dashboard Stats ---
-        $totalPatients = \App\Models\Patient::count();
-        $activePatients = \App\Models\Patient::where('status', 'Active')->count();
+        $totalPatients = Patient::count();
+        $activePatients = Patient::where('status', 'Active')->count();
 
-        // Pass everything to the view
         return view('patients.index', compact('patients', 'totalPatients', 'activePatients'));
     }
 
@@ -67,17 +60,14 @@ class PatientController extends Controller
         return view('patients.create');
     }
 
-    /**
-     * STEP 1: Save the Medical Profile, then redirect to Account Creation
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'first_name' => 'required',
-            'last_name'  => 'required',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
             'email'      => 'required|email|unique:patients,email',
             'dob'        => 'required|date',
-            'gender'     => 'required',
+            'gender'     => 'required|in:Male,Female,Other',
         ]);
 
         $patient = Patient::create([
@@ -85,47 +75,39 @@ class PatientController extends Controller
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
             'email'          => $request->email,
-            'dob'            => $request->dob,
+            'dob'  => $request->dob, // Fixed column name mismatch (dob vs date_of_birth)
             'gender'         => $request->gender,
             'status'         => 'Active',
         ]);
 
-        // Redirect Admin to Step 2 with the newly created Patient ID
         return redirect()->route('patients.account.create', $patient->id);
     }
 
-    /**
-     * STEP 2 (VIEW): Show the Portal Login creation form
-     */
     public function createAccount($id)
     {
         $patient = Patient::findOrFail($id);
-        // Assumes you created the resources/views/patients/create_account.blade.php file!
         return view('patients.create_account', compact('patient'));
     }
 
     /**
-     * STEP 2 (PROCESS): Save the User Login credentials
+     * FIX: Save credentials to the PATIENT table, not the USER table.
      */
     public function storeAccount(Request $request, $id)
     {
         $patient = Patient::findOrFail($id);
 
         $request->validate([
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            // REMOVE 'confirmed' from here:
+            'password' => 'nullable|min:6',
         ]);
 
-        User::create([
-            'name'     => $patient->first_name . ' ' . $patient->last_name,
-            'email'    => $request->email,
+        // Save to the patient's record
+        $patient->update([
             'password' => Hash::make($request->password),
-            'role'     => 'patient',
         ]);
 
-        return redirect()->route('patients.index')->with('success', 'Patient profile and portal login created successfully!');
+        return redirect()->route('patients.index')->with('success', 'Patient portal access granted!');
     }
-
     public function edit($id)
     {
         $patient = Patient::findOrFail($id);
@@ -142,21 +124,17 @@ class PatientController extends Controller
             'email'      => 'required|email|unique:patients,email,' . $id,
             'dob'        => 'required|date',
             'gender'     => 'required',
-            'password'   => 'nullable|min:6', // Validate password only if provided
+            'password' => 'nullable|min:6', // Now it only expects one password field,
         ]);
 
-        // Update Patient Model
-        $patient->update($request->except('password'));
+        $data = $request->except('password', 'password_confirmation');
+        $data['date_of_birth'] = $request->dob; // Sync naming
 
-        // If a password was typed in, update the related Portal User account
         if ($request->filled('password')) {
-            $user = \App\Models\User::where('email', $patient->email)->first();
-            if ($user) {
-                $user->update([
-                    'password' => bcrypt($request->password)
-                ]);
-            }
+            $data['password'] = Hash::make($request->password);
         }
+
+        $patient->update($data);
 
         return redirect()->route('patients.index')->with('success', 'Patient updated successfully!');
     }
@@ -164,13 +142,6 @@ class PatientController extends Controller
     public function destroy($id)
     {
         $patient = Patient::findOrFail($id);
-
-        // Also delete their User account if it exists
-        $user = User::where('email', $patient->email)->first();
-        if ($user) {
-            $user->delete();
-        }
-
         $patient->delete();
 
         return redirect()->route('patients.index')->with('success', 'Patient record deleted.');

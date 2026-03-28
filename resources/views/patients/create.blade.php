@@ -17,20 +17,21 @@
                 <h2 class="text-xl font-bold text-slate-800">Create Medical Profile</h2>
                 <p class="text-sm text-slate-500">Enter the patient's personal information below.</p>
             </div>
-            <a href="{{ route('patients.index') }}" class="text-sm font-medium text-slate-400 hover:text-slate-600">Cancel</a>
+            <a href="{{ route('patients.index') }}"
+                class="text-sm font-medium text-slate-400 hover:text-slate-600">Cancel</a>
         </div>
 
         <form action="{{ route('patients.store') }}" method="POST" class="p-8 space-y-6">
             @csrf
 
             @if ($errors->any())
-                <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-200">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-200">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
             <div class="grid grid-cols-2 gap-4">
@@ -62,9 +63,9 @@
                     <label class="block text-sm font-medium text-slate-700 mb-1">Gender</label>
                     <select name="gender" required
                         class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                        <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                        <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
+                        <option value="Male" {{ old('gender')=='Male' ? 'selected' : '' }}>Male</option>
+                        <option value="Female" {{ old('gender')=='Female' ? 'selected' : '' }}>Female</option>
+                        <option value="Other" {{ old('gender')=='Other' ? 'selected' : '' }}>Other</option>
                     </select>
                 </div>
             </div>
@@ -76,7 +77,6 @@
         </form>
 
     </div>
-
 </body>
 
 </html>

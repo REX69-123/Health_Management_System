@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+// Change 'Model' to 'Authenticatable'
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Carbon\Carbon;
 
-class Patient extends Model
+class Patient extends Authenticatable
 {
-    // This allows Laravel to save these fields into MySQL
     protected $fillable = [
         'patient_number',
         'first_name',
@@ -15,11 +15,17 @@ class Patient extends Model
         'email',
         'dob',
         'gender',
-        'status'
+        'status',
+        'password'
     ];
+
+    protected $casts = [
+        'dob' => 'date', // Ensures 'dob' is a date object
+    ];
+
+    // FIX FOR THE BLANK AGE IN DASHBOARD
     public function getAgeAttribute()
     {
-        if (!$this->dob) return 'N/A';
-        return \Carbon\Carbon::parse($this->dob)->age;
+        return $this->dob ? Carbon::parse($this->dob)->age : 'N/A';
     }
 }

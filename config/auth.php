@@ -69,12 +69,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model'  => App\Models\User::class, // This is for Admins
         ],
-        // ADD THIS PROVIDER
+
         'patients' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class, // Using the same User model with roles
+            'model'  => App\Models\Patient::class, // This is for Patients
         ],
     ],
 
