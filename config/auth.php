@@ -42,13 +42,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        // ADD THIS GUARD
         'patient' => [
             'driver' => 'session',
-            'provider' => 'patients',
+            'provider' => 'patients', // Points to the patients provider below
         ],
     ],
-
     /*
     |--------------------------------------------------------------------------
     | User Providers

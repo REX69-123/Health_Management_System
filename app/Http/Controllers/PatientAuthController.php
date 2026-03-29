@@ -26,23 +26,16 @@ class PatientAuthController extends Controller
             'password' => 'required',
         ]);
 
-        // Use the 'patient' guard so Laravel knows THIS is a patient session
+        // Attempt to log in using the 'patient' guard specifically
         if (Auth::guard('patient')->attempt($credentials)) {
-            $user = Auth::guard('patient')->user();
-
-            // Extra security: check role
-            if (strtolower($user->role) !== 'patient') {
-                Auth::guard('patient')->logout();
-                return back()->withErrors(['email' => 'This account is not a patient.']);
-            }
-
             $request->session()->regenerate();
-
-            // Use intended() to ensure they go to the dashboard
-            return redirect()->intended(route('portal.dashboard'));
+            return redirect()->intended('/portal/dashboard');
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials.']);
+        // If it fails, it might be trying to check the Admin table
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our patient records.',
+        ]);
     }
 
     public function logout(Request $request)
