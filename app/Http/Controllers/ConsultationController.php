@@ -9,23 +9,18 @@ use Illuminate\Support\Facades\Auth;
 
 class ConsultationController extends Controller
 {
-
-    // READ: Show the table of all consultations
     public function index()
     {
-        // Fetch all consultations with the related patient data
         $consultations = Consultation::with('patient')->latest()->get();
         return view('consultations.index', compact('consultations'));
     }
 
-    // CREATE: Show the form
     public function create()
     {
         $patients = Patient::orderBy('last_name')->get();
         return view('consultations.create', compact('patients'));
     }
 
-    // STORE: Save to database
     public function store(Request $request)
     {
         $request->validate([
@@ -48,9 +43,7 @@ class ConsultationController extends Controller
             'status'          => $request->status,
         ]);
 
-        // THE REDIRECT LOGIC: Redirect based on status
         if ($consultation->status === 'Completed') {
-            // Redirects to the list of all Medical Records
             return redirect()->route('medical-records.index')
                 ->with('success', 'Consultation finalized and added to Medical Records table.');
         }
@@ -59,7 +52,6 @@ class ConsultationController extends Controller
             ->with('success', 'Consultation saved as pending.');
     }
 
-    // UPDATE: Save changes
     public function update(Request $request, Consultation $consultation)
     {
         $request->validate([
@@ -67,12 +59,9 @@ class ConsultationController extends Controller
             'status'          => 'required|in:Pending Doctor Review,Completed',
         ]);
 
-        // Fill all data from request
         $consultation->update($request->all());
 
-        // THE REDIRECT LOGIC: Redirect based on status
         if ($consultation->status === 'Completed') {
-            // Redirects to the list of all Medical Records
             return redirect()->route('medical-records.index')
                 ->with('success', 'Record updated and moved to Medical Records table.');
         }
@@ -81,20 +70,17 @@ class ConsultationController extends Controller
             ->with('success', 'Consultation updated successfully.');
     }
 
-    // READ: View a single consultation record
     public function show(Consultation $consultation)
     {
         return view('consultations.show', compact('consultation'));
     }
 
-    // UPDATE: Show the edit form
     public function edit(Consultation $consultation)
     {
         $patients = Patient::orderBy('last_name')->get();
         return view('consultations.edit', compact('consultation', 'patients'));
     }
 
-    // DELETE: Remove the record
     public function destroy(Consultation $consultation)
     {
         $consultation->delete();

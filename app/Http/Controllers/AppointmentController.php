@@ -9,9 +9,6 @@ use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
-    /**
-     * Display the Appointment Dashboard with 5 Stats Cards
-     */
     public function index(Request $request)
     {
         $query = Appointment::with('patient');
@@ -28,7 +25,6 @@ class AppointmentController extends Controller
             });
         }
 
-        // 2. Handle Status Filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -52,7 +48,6 @@ class AppointmentController extends Controller
 
         $appointments = $query->get();
 
-        // --- Stats Calculation ---
         $today = Carbon::today()->toDateString();
 
         $totalCount = Appointment::count();
@@ -72,8 +67,6 @@ class AppointmentController extends Controller
             'completedCount'
         ));
     }
-
-    // ... (rest of the controller methods remain the same)
 
     public function create()
     {

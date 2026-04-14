@@ -11,7 +11,6 @@ class MedicalRecordController extends Controller
 {
     public function index()
     {
-        // Fetch COMPLETED consultations to act as medical records
         $records = \App\Models\Consultation::with('patient')
             ->where('status', 'Completed')
             ->latest()
@@ -19,7 +18,7 @@ class MedicalRecordController extends Controller
 
         return view('medical-records.index', compact('records'));
     }
-    
+
     public function show($id)
     {
         $patient = Patient::findOrFail($id);

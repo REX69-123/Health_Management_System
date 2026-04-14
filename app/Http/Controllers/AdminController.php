@@ -46,30 +46,24 @@ class AdminController extends Controller
         return view('admins.edit', compact('admin'));
     }
 
-    // Save the updated details
-    // Save the updated details
     public function update(Request $request, User $admin)
     {
-        // 1. Base validation rules
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $admin->id,
         ];
 
-        // 2. If they typed a password, add password validation rules
         if ($request->filled('password')) {
             $rules['password'] = 'required|string|min:8|confirmed';
         }
 
         $request->validate($rules);
 
-        // 3. Prepare the data to update
         $data = [
             'name' => $request->name,
             'email' => $request->email,
         ];
 
-        // 4. Hash and add the password ONLY if they typed a new one
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -79,10 +73,9 @@ class AdminController extends Controller
         return redirect()->route('admins.index')->with('success', 'Administrator updated successfully!');
     }
 
-    // Delete the admin
     public function destroy(User $admin)
     {
-        // Prevent the logged-in admin from deleting themselves
+
         if (Auth::id() === $admin->id) {
             return redirect()->route('admins.index')->with('error', 'You cannot delete your own account.');
         }
