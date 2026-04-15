@@ -22,10 +22,13 @@ Before setting up the system, ensure your server or local machine has the follow
 
 ## Instructions to start the system
 
+Use the terminal that has -Health_Management_System only!!
+
 1. Turn on xampp and open IDE Vs Code then open folder, Choose the folder location then create new folder and use it
-2. Go to the VS Code terminal then type this to clone repo
- 
-git clone https://github.com/REX69-123/Health_Management_System.git then cd Health_Management_System
+2. Go to the VS Code terminal then type this to clone repo (Copy and paste the 2 commands below on the terminal)
+
+git clone https://github.com/REX69-123/Health_Management_System.git 
+cd Health_Management_System
 
 4. Download the Local_Clinic_DB sql file and put into your database PhpMyAdmin or MySQL Workbench
 6. Rename .env.example to .env
