@@ -33,7 +33,7 @@ cd Health_Management_System
 4. Download the Local_Clinic_DB sql file and put into your database PhpMyAdmin or MySQL Workbench
 6. Rename .env.example to .env
 7. Go to env file upon opening the project folder find and change the DB_Database into DB_DATABASE=Local_Clinic_DB, Session Driver into file and APP URL to APP_URL=http://127.0.0.1:8000
-8. Go to Vs Code terminal then Composer install -> npm install -> npm run build -> php artisan key:generate then php artisan storage:link -> php artisan migrate -> php artisan migrate:fresh --seed and type composer run dev ( if it asks question when running migrate and migrate:fresh click yes)
+8. Go to Vs Code terminal then Composer install -> npm install -> npm run build -> php artisan key:generate then php artisan storage:link -> php artisan migrate -> php artisan migrate:fresh --seed and type composer run dev ( if it asks question when running migrate and migrate:fresh click yes also if it asks for npm aufit fix when running npm install run npm audit fix)
 9. To open as admin Type this on browser 127.0.0.1:8000/login and 127.0.0.1:8000/portal/login as patient
 10. To login as admin Email: admin@clinic.com Pass: Password
 
