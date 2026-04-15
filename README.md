@@ -22,10 +22,10 @@ Before setting up the system, ensure your server or local machine has the follow
 
 ## Instructions to start the system
 
-1. Turn on xampp and open IDE Vs Code
+1. Turn on xampp and open IDE Vs Code then open folder, Choose the folder location then create new folder and use it
 2. Go to the VS Code terminal then type this to clone repo
  
- git clone https://github.com/REX69-123/Health_Management_System.git then cd Health_Management_System
+git clone https://github.com/REX69-123/Health_Management_System.git then cd Health_Management_System
 
 4. Download the Local_Clinic_DB sql file and put into your database PhpMyAdmin or MySQL Workbench
 5. Go to Vs Code terminal then Composer install -> npm install -> php artisan key:generate
