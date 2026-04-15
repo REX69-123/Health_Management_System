@@ -23,12 +23,15 @@ Before setting up the system, ensure your server or local machine has the follow
 ## Instructions to start the system
 
 1. Turn on xampp and open IDE Vs Code
-2. Clone the Repository Download the project files to your local environment.
-3. Download the Local_Clinic_DB sql file and put into your database PhpMyAdmin or MySQL Workbench
-4. Go to Vs Code terminal then Composer install -> npm install -> php artisan key:generate
-5. Go to Env file upon opening the project folder find and change the DB_Database into DB_DATABASE=Local_Clinic_DB
-6. Go to terminal then php artisan storage:link -> php artisan migrate -> php artisan migrate:fresh --seed and type composer run dev
-7. To open as admin Type this on browser 127.0.0.1:8000/login and 127.0.0.1:8000/portal/login as patient
+2. Go to the VS Code terminal then type this to clone repo
+ 
+ git clone https://github.com/REX69-123/Health_Management_System.git then cd Health_Management_System
+
+4. Download the Local_Clinic_DB sql file and put into your database PhpMyAdmin or MySQL Workbench
+5. Go to Vs Code terminal then Composer install -> npm install -> php artisan key:generate
+6. Go to Env file upon opening the project folder find and change the DB_Database into DB_DATABASE=Local_Clinic_DB
+7. Go to terminal then php artisan storage:link -> php artisan migrate -> php artisan migrate:fresh --seed and type composer run dev
+8. To open as admin Type this on browser 127.0.0.1:8000/login and 127.0.0.1:8000/portal/login as patient
 
 ## How to troubleshoot
 php artisan optimize:clear to clear all cache
