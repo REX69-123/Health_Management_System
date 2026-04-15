@@ -4,7 +4,14 @@ A robust, industry-standard web application built on Laravel for managing clinic
 
 This system utilizes multi-authentication to strictly separate Administrative/Staff capabilities from Patient Data, ensuring secure access to medical records, appointments, and portal logins.
 
-## 📋 Prerequisites
+# Members
+
+PM - Christian Attos
+QA - Adrian Calvez
+FRONT END - Rex Salibay
+BACK END - Matthew Ikee Crispino
+
+## Prerequisites
 
 Before setting up the system, ensure your server or local machine has the following installed:
 
