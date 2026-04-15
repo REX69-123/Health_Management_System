@@ -26,3 +26,12 @@ Before setting up the system, ensure your server or local machine has the follow
 
 ## How to troubleshoot
 php artisan optimize:clear to clear all cache
+
+# Visual Documentation
+<img width="1365" height="637" alt="image" src="https://github.com/user-attachments/assets/b95e5a1e-2d2e-425e-a475-3b53fb78c04d" />
+The main hub for staff to manage patients, appointments, and medical records.
+
+<img width="1352" height="638" alt="image" src="https://github.com/user-attachments/assets/19babe90-2947-45e0-8c95-69f52e44318f" />
+The isolated, secure view where patients can review their age, status, and history.
+
+
