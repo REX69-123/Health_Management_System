@@ -25,6 +25,8 @@ Before setting up the system, ensure your server or local machine has the follow
 1. Use the terminal that has -Health_Management_System only!!
 2. -> step
 
+# Instructions
+
 1. Turn on xampp and open IDE Vs Code then open folder, Choose the folder location then create new folder and use it
 2. Go to the VS Code terminal then type this to clone repo (Copy and paste the 2 commands below on the terminal)
 
