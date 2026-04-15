@@ -28,7 +28,7 @@ Before setting up the system, ensure your server or local machine has the follow
 git clone https://github.com/REX69-123/Health_Management_System.git then cd Health_Management_System
 
 4. Download the Local_Clinic_DB sql file and put into your database PhpMyAdmin or MySQL Workbench
-5. Go to Vs Code terminal then Composer install -> npm install -> php artisan key:generate
+5. Go to Vs Code terminal then Composer install -> npm install -> npm run build -> php artisan key:generate
 6. Copy env.example then paste and rename it into .env
 8. Go to env file upon opening the project folder find and change the DB_Database into DB_DATABASE=Local_Clinic_DB, Session Driver into file
 9. Go to terminal then php artisan storage:link -> php artisan migrate -> php artisan migrate:fresh --seed and type composer run dev ( if it asks question when running migrate and migrate:fresh click yes)
